@@ -4,70 +4,69 @@
 
 
 
-// const bookSchema = new mongoose.Schema(
-//     {
-//       title: {
-//         type: String,
-//         required: true,
-//         unique:true
-//       },
+const bookSchema = new mongoose.Schema(
+    {
+      title: {
+        type: String,
+        required: true,
+        unique:true,
+        trim:true
+      },
 
-//       excerpt: {
-//         type: String,
-//         required: true,
-//       },
+      excerpt: {
+        type: String,
+        required: true,
+      },
 
-//       userId: {
-//         type: objectId,
-//         required: true,
-//         ref: "User",
-//       },
-//       ISBN:{
-//           type: String,
-//           required:true,
-//           unique:true
-//       },
+      userId: {
+        type: objectId,
+        required: true,
+        ref: "User",
+      },
+      ISBN:{
+          type: String,
+          required:true,
+          unique:true
+      },
      
-//       category: {
-//         type: String,
-//         required: true,
-//       },
+      category: {
+        type: String,
+        required: true,
+      },
 
-//       subcategory: {
-//         type:String,
-//         required:true,
-//       },
+      subcategory: {
+        type:String,
+        required:true,
+      },
 
-//       review:{
-//           type: Number,
-//           default:0,
-//           comment: "Holds number of reviews of this book",
-//       },
+      review:{
+          type: Number,
+          default:0,
+          comment: "Holds number of reviews of this book",
+      },
 
-//       deletedAt: {
-//         type:Boolean,
-//        default: false
-//      },
+      deletedAt: {
+        type:Boolean,
+       default: false
+     },
 
-//       isDeleted: {
-//         type: Boolean,
-//         default: false,
-//       },
+      isDeleted: {
+        type: Boolean,
+        default: false,
+      },
 
      
+      releasedAt: {
+        type: Date,
+        required:true,
+       // formate: YYYY-MM-DD
+      },
 
-//       releasedAt: {
-//         type: Date,
-//         required:true,
-//         formate: YYYY-MM-DD
-//       },
+    
+    },
 
-//       createdAt: timestamp,
-//        updatedAt: timestamp,
-//     },
-
-//     { timestamps: true }
-//   );
+    { timestamps: true }
+  );
   
-//   module.exports = mongoose.model("Book", bookSchema);
+  module.exports = mongoose.model("Book", bookSchema);
   
