@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema(
     },
 
     address: {
-      type: String,},
+      
       street: {
         type:String,
       },
@@ -52,7 +52,8 @@ const userSchema = new mongoose.Schema(
       },
       pincode: {
         type:Number
-      },
+      }
+    },
 
 
       phone: {

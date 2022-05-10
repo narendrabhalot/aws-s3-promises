@@ -1,0 +1,28 @@
+const mongoose = require('mongoose')
+const jwt = require('jsonwebtoken');
+// const bookModels = require('../Models/bookModels');
+// const userModels= require('../Models/userModels');
+
+
+const authentication = function (req, res, next) {
+    try {
+        let token = req.headers["x-auth-key"];
+        if (!token) {
+            return res.status(404).send({ status: false, msg: "token must be present" });
+        }
+        let decodedToken = jwt.verify(token, "functionUp");
+
+        if (!decodedToken) {
+            return res.status(404).send({ status: false, msg: "token is incorrect" });
+        }
+        req.userId = decodedToken.userId;
+        next();
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send({ status: false, msg: err.message });
+    }
+}
+
+
+
+module.exports.authentication=authentication

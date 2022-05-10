@@ -55,6 +55,11 @@ const bookSchema = new mongoose.Schema(
       },
 
      
+      releasedAt: {
+        type: Date,
+        required:true,
+       // formate: YYYY-MM-DD
+      },
 
       releasedAt: {
         type: Date,
