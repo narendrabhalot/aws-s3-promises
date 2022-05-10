@@ -1,28 +1,24 @@
 const mongoose = require("mongoose")
-// let date = moment().format('DD/MM/YYYY');
-// console.log(date)
+const moment = require('moment')
 
-const emailValidation = function(email){
-    let regexForEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-    return regexForEmail.test(email)
-}
+ let date = moment().format('DD/MM/YYYY');
+ console.log(date)
 
-const mobileValidation = function(mobile){
-    let regexForMobile = /^[6-9]\d{9}$/
-    return regexForMobile.test(mobile)
-}
+
 
 const userSchema = new mongoose.Schema(
     {
       title: {
         type: String,
         required: true,
+        trim:true,
         enum: ["Mr", "Mrs", "Miss"],
       },
 
        name: {
         type: String,
         required: true,
+        trim:true,
       },
 
       email: {
@@ -30,40 +26,47 @@ const userSchema = new mongoose.Schema(
         trim: true,
         lowercase: true,
         unique: true,
-        required: 'Email address is required',
-        validate: [emailValidation, 'Please fill a valid email address'],
-        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+        required:[true, 'Email address is required'],
+        validate: {
+          validator: function (email) {
+              return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
+          },
+          message: "please enter a valid email"
+      }
     },
+
+    password: {
+      type: String,
+      required: true,
+      unique:true,
+      trim:true
+    },
+
+    address: {
+      type: String,},
+      street: {
+        type:String,
+      },
+      city: {
+        type:String,
+      },
+      pincode: {
+        type:Number
+      },
+
+
      mobile: {
         type : Number,
         required : [true, "mobile number is mandatory"],
         unique: [true, "mobile number already exist"],
-        validate:[mobileValidation, "please enter a valid mobile number"],
-        trim :true
+        validator: function (mobile) {
+          return /^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile);
+      }
     },
 
-      password: {
-        type: String,
-        required: true,
-        unique:true
       },
 
-      address: {
-        type: String,},
-        street: {
-          type:String,
-        },
-        city: {
-          type:String,
-        },
-        pincode: {
-          type:Number
-        }
-      },
-
-      // createdAt: timestamp,
-      //  updatedAt: timestamp
-
+     
 
 
     {timestamps: true }

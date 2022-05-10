@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const userModels = require("../models/userModels.js");
 
-// const validator = require('validator');
+ const validator = require('validator');
 
 
 const isValid = function (value) {
@@ -22,7 +22,7 @@ const registerUser = async function (req , res){
                 
             }else {
     
-                const {title, name, email, password, address } = data
+                const {title, name, email, password,mobile, address } = data
 
 
                 const checkTitle = data.title
@@ -45,17 +45,33 @@ const registerUser = async function (req , res){
                 if (!isValid(email)) {
                     return res.status(400).send({ status: false, msg: "email is required" })
                 }
+
+                if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+                  return res.status(400).send({ status: false, msg: "please enter a valid email" })
+              }
     
                 if (!isValid(password)) {
                     return res.status(400).send({ status: false, msg: "password is required" })
                 }
+
+
+                if (!isValid(mobile)) {
+                  return res.status(400).send({ status: false, msg: "mobile number is required" })
+              }
+
+
+              if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
+                return res.status(400).send({ status: false, msg: "please enter a valid mobile number" })
+               }
+
+
                 if (!isValid(address)) {
                     return res.status(400).send({ status: false, msg: "address is required" })
                 }
 
 
 
-                let saveData = await collegeModel.create(data)
+                let saveData = await userModels.create(data)
                 return res.status(201).send({ status: true, msg: saveData })
     
             }
@@ -71,6 +87,8 @@ const registerUser = async function (req , res){
 
 //////////////////////////////////--USER LOGIN---///////////////////////////// 
 
+
+
 const userLogIn = async function (req, res) {
   
     try{
@@ -83,23 +101,36 @@ const userLogIn = async function (req, res) {
     
       if (!email){
         return res.status(400).send({status:false, msg:"email is required"})
+
+
+
       }
     ///////////////////////// -VALIDATOR- ///////////////////////////////////////
+
+
      const validEmail = validator.isEmail(email)
      if (!validEmail){
        return res.status(400).send({status:false, msg:"email is not valid"})
      }
+
     
      const checkedUser = await userModels.findOne({ email: email, password: password });
       if (!checkedUser) {
         return res.status(404).send({ status: false, msg: "email or password is not correct"});
       }
+
        else {
         const token = jwt.sign({ userId: checkedUser._id.toString() },"functionUp");
         return res.status(201).send({ status: true, Token: token });
       }
+
     }
     catch (error) { res.status(500).send({ msg: error.message })}};
+
+
+
+
+
     
     module.exports.userLogIn = userLogIn;
     module.exports.registerUser = registerUser;
