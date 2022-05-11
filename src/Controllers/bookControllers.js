@@ -1,10 +1,8 @@
-
-
 const mongoose = require("mongoose");
 const userModels = require("../models/userModels.js");
 const bookModels = require("../Models/bookModels.js");
 const reviewModels = require("../Models/reviewModels.js");
-const moment = require('moment')
+
 
 
 const isValid = function (value) {
@@ -87,7 +85,7 @@ const createBook = async function (req, res) {
 
         }
 
-        req.body.releasedAt = moment().format('YYYY-MM-DD')
+        
         let saveData = await bookModels.create(data)
         return res.status(201).send({ status: true, msg: saveData })
 
@@ -103,10 +101,11 @@ const createBook = async function (req, res) {
 const getBooks = async function (req, res) {
     try {
         let data = req.query
+
         if (Object.keys(data).length === 0) {
-            let allBooks = await bookModels.find({ isDeleted: false }).select({ ISBN: 0, subcategory: 0, deletedAt: 0, isDeleted: 0, createdAt: 0, updatedAt: 0 }).sort({ title: 1 })
+            let allBooks = await bookModels.find({ isDeleted: false }).select({ ISBN: 0, subcategory: 0, deletedAt: 0, isDeleted: 0, createdAt: 0, updatedAt: 0, __v: 0 }).sort({ title: 1 })
             if (allBooks.length == 0) return res.status(404).send({ status: false, msg: "books not found" })
-            return res.status(200).send({ status: true, data: allBooks })
+            return res.status(200).send({ status: true, msg : "Success",data: allBooks })
         }
 
         let filterBooks = await bookModels.find({ $and: [data, { isDeleted: false }] }).sort({ title: 1 })
@@ -114,7 +113,7 @@ const getBooks = async function (req, res) {
         if (filterBooks.length == 0) return res.status(404).send({ status: false, msg: "no books found" })
 
 
-        return res.status(200).send({ status: true, data: filterBooks })
+        return res.status(200).send({ status: true,msg :"Book List", data: filterBooks })
     }
     catch (error) {
         res.status(500).send({ status: false, msg: error.message })
@@ -146,12 +145,11 @@ const getBooksById = async function (req, res) {
         }
 
 
-        const availableReviews = await reviewModels.find({ bookId: foundedBook._id, isDeleted: false }).select({ isDeleted: 0, createdAt: 0, updateAt: 0 })
+        const availableReviews = await reviewModels.find({ bookId: foundedBook._id, isDeleted: false }).select({ isDeleted: 1, createdAt: 1, updateAt: 1 })
          
+         foundedBook._doc["reviewData"] = availableReviews
 
-        Object["reviewData"] = availableReviews
-
-        return res.status(200).send({ status: true, message: "Books list", data: foundedBook })
+      return res.status(200).send({ status: true, message: "Books list", data:foundedBook  })
 
 
     } catch (error) { res.status(500).send({ msg: error.message }) }
@@ -187,7 +185,7 @@ const updateBooks = async function (req, res) {
             return res.status(400).send({ status: false, msg: " Book has deleted " })
         }
 
-        let updatebook = await bookModels.findByIdAndUpdate({ _id: bookId, isDeleted: false }, body, { new: true })
+        let updatebook = await bookModels.findOneAndUpdate({ _id: bookId, isDeleted: false }, {title:body.title,  updateAt:D} , { new: true })
 
         return res.status(200).send({ status: true, msg: "book update successfully ", data: updatebook })
 
@@ -211,11 +209,11 @@ const deleteBooksById = async function (req, res) {
         }
         let isDeleted = isbookdeleted.isDeleted
         if(isDeleted == true){
-            res.status(400).send({status:false , msg : "book already deleted"})
+           return res.status(400).send({status:false , msg : "book already deleted"})
         }
         let allBooks = await bookModels.findOneAndUpdate({ _id:bookId }, { $set: { isDeleted: true, deletedAt:Date.now() } }, { new: true})
         if (allBooks)
-            res.status(200).send({ status: true, data: "book deleted successfully" })
+           return   res.status(200).send({ status: true, data: "book deleted successfully" })
         else
             res.status(404).send({ status: false, msg: "No Books Exist" })
     }

@@ -49,6 +49,11 @@ const registerUser = async function (req, res) {
         if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
           return res.status(400).send({ status: false, msg: "please enter a valid email" })
         }
+        
+        let isuserpresent = await userModels.find({ email: email })
+        if (isuserpresent) {
+          return res.status(400).send({ status: false, msg: "email already present" })
+        }
 
         if (!isValid(password)) {
           return res.status(400).send({ status: false, msg: "password is required" })
@@ -101,10 +106,10 @@ const userLogIn = async function (req, res) {
 
     if (!email) {
       return res.status(400).send({ status: false, msg: "email is required" })
-
-
-
     }
+
+
+
     ///////////////////////// -VALIDATOR- ///////////////////////////////////////
 
 
