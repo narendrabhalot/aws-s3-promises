@@ -5,7 +5,7 @@ const userControllers = require("../Controllers/userControllers")
 const bookControllers = require("../Controllers/bookControllers")
 const reviewController= require("../Controllers/reviewController")
 const middleware = require("../middleware/auth");
-const { route } = require('express/lib/application');
+
 
 
 //User Api
@@ -28,6 +28,7 @@ router.delete("/books/:bookId", middleware.authentication, bookControllers.delet
 //Review Api
 
 router.post("/books/:bookId/review",reviewController.createReview)
+router.put("/books/:bookId/review/:reviewId",reviewController.updateReview)
 router.delete("books/:bookId/review/:reviewId",reviewController.deletedReviews)
 
 
