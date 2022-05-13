@@ -12,10 +12,17 @@ const isValid = function (value) {
     return true;
 };
 
+const isValidObjectId = function (ObjectId) {
+    return mongoose.Types.ObjectId.isValid(ObjectId)
+}
+
 
 const isvalidRequestBody = function (requestbody) {
     return Object.keys(requestbody).length > 0;
 }
+
+
+
 
 
 const createBook = async function (req, res) {
@@ -27,7 +34,7 @@ const createBook = async function (req, res) {
             return res.send({ status: false, msg: "please provide  details" })
         }
         else {
-            const { title, excerpt, userId, ISBN, category, subcategory, review, isDeleted,releasedAt } = data
+            const { title, excerpt, userId, ISBN, category, subcategory, isDeleted,releasedAt } = data
 
             if (isDeleted) {
                 if (isDeleted == true) {
@@ -53,6 +60,11 @@ const createBook = async function (req, res) {
                 return res.status(400).send({ status: false, msg: "userId is required" })
             }
 
+            if (!isValidObjectId(userId)) {
+                return res.status(400).send({ status: false, msg: "invalid userId" })
+            }
+
+
 
             let isUser = await userModels.findById(userId)
             if(!isUser){
@@ -75,10 +87,7 @@ const createBook = async function (req, res) {
                 return res.status(400).send({ status: false, msg: "releasedAt is required" })
             }
 
-            if (!isValidNumber(review)) {
-                return res.status(400).send({ status: false, msg: "number is required" })
-            }
-
+           
 
         }
 
