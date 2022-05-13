@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const userModels = require("../models/userModels.js");
-
+const mongoose =require('mongoose');
 const validator = require('validator');
 
 
@@ -120,7 +120,8 @@ const userLogIn = async function (req, res) {
     }
 
     else {
-      const token = jwt.sign({ userId: checkedUser._id.toString() }, "functionUp");
+      
+      const token = jwt.sign({ userId: checkedUser._id.toString() }, "functionUp",{expiresIn: '600s'});
       return res.status(201).send({ status: true, Token: token });
     }
 
