@@ -1,8 +1,8 @@
-
 const mongoose = require("mongoose");
 const userModels = require("../models/userModels.js");
 const bookModels = require("../Models/bookModels.js");
 const reviewModels = require("../Models/reviewModels.js");
+
 const moment = require('moment')
 
 
@@ -12,10 +12,6 @@ const isValid = function (value) {
     return true;
 };
 
-const isValidNumber = function (Number) {
-    if (typeof Number == NaN || Number === 0) return false;
-    return true
-}
 
 const isvalidRequestBody = function (requestbody) {
     return Object.keys(requestbody).length > 0;
@@ -86,7 +82,7 @@ const createBook = async function (req, res) {
 
         }
 
-        req.body.releasedAt = moment().format('YYYY-MM-DD')
+        
         let saveData = await bookModels.create(data)
         return res.status(201).send({ status: true, msg: saveData })
 
@@ -123,6 +119,7 @@ const getBooks = async function (req, res) {
         res.status(500).send({ status: false, msg: error.message })
     }
 }
+    
 
 
 
