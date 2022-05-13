@@ -3,7 +3,9 @@ const router = express.Router();
 
 const userControllers = require("../Controllers/userControllers")
 const bookControllers = require("../Controllers/bookControllers")
-const middleware = require("../middleware/auth")
+const reviewController= require("../Controllers/reviewController")
+const middleware = require("../middleware/auth");
+const { route } = require('express/lib/application');
 
 
 //User Api
@@ -20,6 +22,13 @@ router.get("/books/:bookId",middleware.authentication, bookControllers.getBooksB
 
 router.put("/books/:bookId", middleware.authentication, bookControllers.updateBooks)
 router.delete("/books/:bookId", middleware.authentication, bookControllers.deleteBooksById)
+
+
+
+//Review Api
+
+router.post("/books/:bookId/review",reviewController.createReview)
+router.delete("books/:bookId/review/:reviewId",reviewController.deletedReviews)
 
 
 module.exports = router

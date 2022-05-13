@@ -3,6 +3,7 @@ const userModels = require("../models/userModels.js");
 const bookModels = require("../Models/bookModels.js");
 const reviewModels = require("../Models/reviewModels.js");
 
+const moment = require('moment')
 
 
 const isValid = function (value) {
@@ -11,10 +12,6 @@ const isValid = function (value) {
     return true;
 };
 
-const isValidNumber = function (Number) {
-    if (typeof Number == NaN || Number === 0) return false;
-    return true
-}
 
 const isvalidRequestBody = function (requestbody) {
     return Object.keys(requestbody).length > 0;
@@ -98,6 +95,9 @@ const createBook = async function (req, res) {
 }
 
 
+
+
+
 const getBooks = async function (req, res) {
     try {
         let data = req.query
@@ -156,7 +156,6 @@ const getBooksById = async function (req, res) {
 }
 
 
-
 const updateBooks = async function (req, res) {
     try {
 
@@ -199,6 +198,8 @@ const updateBooks = async function (req, res) {
 
 }
 
+
+
 const deleteBooksById = async function (req, res) {
 
     try {
@@ -236,9 +237,6 @@ const deleteBooksById = async function (req, res) {
     }
 }
 
-
-
-
 module.exports = {
     updateBooks,
     getBooksById,
@@ -246,4 +244,3 @@ module.exports = {
     getBooks,
     deleteBooksById
 }
-
