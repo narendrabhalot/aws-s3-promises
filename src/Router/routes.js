@@ -29,7 +29,7 @@ router.delete("/books/:bookId", middleware.authentication, bookControllers.delet
 
 router.post("/books/:bookId/review",reviewController.createReview)
 router.put("/books/:bookId/review/:reviewId",reviewController.updateReview)
-router.delete("books/:bookId/review/:reviewId",reviewController.deletedReviews)
+router.delete("/books/:bookId/review/:reviewId",reviewController.deletedReviews)
 
 
 module.exports = router
