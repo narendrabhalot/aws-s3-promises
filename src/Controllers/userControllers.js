@@ -51,7 +51,7 @@ const registerUser = async function (req, res) {
         }
         
         let isuserpresent = await userModels.find({ email: email })
-        if (isuserpresent) {
+        if (!isuserpresent) {
           return res.status(400).send({ status: false, msg: "email already present" })
         }
 
@@ -125,7 +125,7 @@ const userLogIn = async function (req, res) {
     }
 
     else {
-      const token = jwt.sign({ userId: checkedUser._id.toString() }, "functionUp");
+      const token = jwt.sign({ userId: checkedUser._id.toString() }, "functionUp",{expiresIn: '600s'});
       return res.status(201).send({ status: true, Token: token });
     }
 

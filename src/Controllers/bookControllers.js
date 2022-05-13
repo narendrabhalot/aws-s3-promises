@@ -203,11 +203,25 @@ const deleteBooksById = async function (req, res) {
 
     try {
         let bookId = req.params.bookId
-        let isbookdeleted = await bookModels.findById(bookId)
-        if(!isbookdeleted){
-            res.status(404).send({status:false , msg: "bookId is not present"})
+        let checkBook = await bookModels.findById(bookId)
+        console.log(checkBook)
+
+        if (!checkBook) {
+            return res.status(404).send({ status: false, msg: "No book found this bookId" })
+
         }
-        let isDeleted = isbookdeleted.isDeleted
+        //athentication
+        let bookIds = checkBook.userId
+        if (!bookIds) {
+            return res.status(404).send({ status: false, msg: " book is not present" })
+        }
+        // Authorisation
+        if (bookIds != req.userId) {
+            return res.status(401).send({ status: false, msg: "you are not change the book " })
+        }
+        
+        
+        let isDeleted = checkBook.isDeleted
         if(isDeleted == true){
            return res.status(400).send({status:false , msg : "book already deleted"})
         }
