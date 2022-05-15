@@ -9,10 +9,10 @@ const isValid = function (value) {
   if (typeof value === "string" && value.trim().length === 0) return false;
   return true;
 };
-const isValidRequestBody = function(requestBody) {
+const isValidRequestBody = function (requestBody) {
   return Object.keys(requestBody).length > 0
 }
-const isValidObjectId = function(objectId) {
+const isValidObjectId = function (objectId) {
   return mongoose.Types.ObjectId.isValid(objectId)
 }
 
@@ -22,23 +22,23 @@ const registerUser = async function (req, res) {
 
   try {
     let data = req.body
-   
+
     if (Object.keys(data).length == 0) {
       res.status(400).send({ status: false, msg: "data not found, Please give the data" })
 
     } else {
 
       const { title, name, email, password, address, phone } = data
-
-
-      if (!isValid(title)) {
-        return res.status(400).send({ status: false, msg: "title is required" })
-      }
-
+      const checkTitle = data.title
       if (checkTitle) {
         if (checkTitle == "Mr" || checkTitle == "Mrs" || checkTitle == "Miss")
 
-         if (!isValid(name)) {
+          if (!isValid(title)) {
+            return res.status(400).send({ status: false, msg: "title is required" })
+          }
+
+
+        if (!isValid(name)) {
           return res.status(400).send({ status: false, msg: "name is required" })
         }
 
@@ -60,7 +60,7 @@ const registerUser = async function (req, res) {
           return res.status(400).send({ status: false, msg: "password is required" })
         }
         if (!(password.length >= 8 && password.length <= 15)) {
-          return res.status(400).send({ status: false, msg: "password length b/w 8-15" })
+          return res.status(400).send({ status: false, msg: "passwords length b/w 8-15" })
         }
 
         if (!isValid(address)) {
@@ -101,25 +101,20 @@ const userLogIn = async function (req, res) {
   try {
     const email = req.body.email;
     const password = req.body.password;
-    if (!isValid(email)) {
+
+    if (!email) {
       return res.status(400).send({ status: false, msg: "email is required" })
     }
-
     if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
       return res.status(400).send({ status: false, msg: "please enter a valid email" })
     }
-     
     if (!password) {
       return res.status(400).send({ status: false, msg: "password is required" })
     }
-
-
-
-
-    ///////////////////////// -VALIDATOR- ///////////////////////////////////////
-
-
-    
+    const validEmail = validator.isEmail(email)
+    if (!validEmail) {
+      return res.status(400).send({ status: false, msg: "email is not valid" })
+    }
 
     const checkedUser = await userModels.findOne({ email: email, password: password });
     if (!checkedUser) {
@@ -128,7 +123,7 @@ const userLogIn = async function (req, res) {
 
     else {
       const token = jwt.sign({ userId: checkedUser._id.toString() }, "functionUp", { expiresIn: '1d' });
-      res.header('x-auth-key',token)
+      res.header('x-auth-key', token)
       return res.status(201).send({ status: true, Token: token });
     }
 

@@ -27,7 +27,7 @@ const createReview = async function (req, res) {
             return res.status(404).send({ status: false, message: "No book found" })
         } else {
             let data = req.body
-            let { review, rating, reviewedBy } = data
+            let { review, rating } = data
 
             if (!isValid(data)) {
                 return res.status(400).send({ status: false, msg: "please provide  details" })
@@ -36,11 +36,6 @@ const createReview = async function (req, res) {
             if (!isValid(review)) {
                 return res.status(400).send({ status: false, msg: "Not a valid review" })
             }
-
-            if (!isValid(reviewedBy)) {
-                return res.status(400).send({ status: false, msg: "Name should be a valid String " })
-            }
-
             if (!(rating >= 1 && rating <= 5)) {
                 return res.status(400).send({ status: false, msg: "Rating should be inbetween 1-5 " })
             }
@@ -50,17 +45,17 @@ const createReview = async function (req, res) {
             let newReview = await bookModels.findOneAndUpdate({ _id: bookId }, {
                 $inc: {
                     review: 1
-                }
-            }, { new: true, upsert: true, })
+                },
+            }, { new: true, upsert: true })
 
             let savedData = await reviewModels.create(data)
             newReview._doc["reviewData"] = savedData
             return res.status(201).send({ status: true, data: newReview })
         }
     }
-    catch (err) {
-        console.log(err)
-        res.status(500).send({ status: false, msg: "error", err: err.message })
+    catch (error) {
+        console.log(error)
+        res.status(500).send({ status: false, msg: "error", err: error.message })
 
     }
 }
