@@ -1,8 +1,5 @@
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken');
-//  const bookModels = require('../Models/bookModels');
-//  const userModels= require('../Models/userModels');
-
 
 const authentication = function (req, res, next) {
     try {
@@ -13,9 +10,6 @@ const authentication = function (req, res, next) {
         let decodedToken = jwt.verify(token, "functionUp")
          
 
-        if (!decodedToken) {
-            return res.status(400).send({ status: false, msg: "token is incorrect" });
-        }
         req.userId = decodedToken.userId;
         next();
     } catch (error) {
@@ -26,4 +20,4 @@ const authentication = function (req, res, next) {
 
 
 
-module.exports.authentication=authentication
+module.exports=authentication

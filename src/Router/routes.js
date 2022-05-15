@@ -4,7 +4,7 @@ const router = express.Router();
 const userControllers = require("../Controllers/userControllers")
 const bookControllers = require("../Controllers/bookControllers")
 const reviewController= require("../Controllers/reviewController")
-const middleware = require("../middleware/auth");
+const authentication = require("../middleware/authentication");
 
 
 
@@ -16,12 +16,12 @@ router.post("/login", userControllers.userLogIn)
 
 //Book Api
 
-router.post("/books",middleware.authentication , bookControllers.createBook)
-router.get("/books",middleware.authentication, bookControllers.getBooks)
-router.get("/books/:bookId",middleware.authentication, bookControllers.getBooksById)
+router.post("/books",authentication, bookControllers.createBook)
+router.get("/books",authentication, bookControllers.getBooks)
+router.get("/books/:bookId",authentication, bookControllers.getBooksById)
 
-router.put("/books/:bookId", middleware.authentication, bookControllers.updateBooks)
-router.delete("/books/:bookId", middleware.authentication, bookControllers.deleteBooksById)
+router.put("/books/:bookId", authentication, bookControllers.updateBooks)
+router.delete("/books/:bookId", authentication, bookControllers.deleteBooksById)
 
 
 
