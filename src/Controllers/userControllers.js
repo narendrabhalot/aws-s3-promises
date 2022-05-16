@@ -50,7 +50,7 @@ const registerUser = async function (req, res) {
           return res.status(400).send({ status: false, msg: "please enter a valid email" })
         }
 
-        let isuserpresent = await userModels.findOne({ email: email })
+        let isuserpresent = await userModelsqfindOne({ email: email })
         console.log(isuserpresent)
         if (isuserpresent) {
           return res.status(400).send({ status: false, msg: "email already present" })

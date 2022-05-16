@@ -67,27 +67,36 @@ const updateReview = async function (req, res) {
     let reviewId = req.params.reviewId
     let body = req.body
 
-    let checkBookId = await bookModels.findById(bookId)
+    
+    if (!isValidObjectId(bookId)) {
+        return res.status(400).send({ status: false, msg: "invalid bookId" })
+    }
+
+    let checkBookId = await bookModels.findOne({_id:bookId})
     if (!checkBookId) {
-        return res.status(400).send({ status: false, msg: "BookId not exist" })
+        return res.status(404).send({ status: false, msg: "BookId not exist" })
     }
     let checkIsDeleted = checkBookId.isDeleted
     if (checkIsDeleted == true) {
         return res.status(400).send({ status: false, msg: "bookId is already Deleted" })
     }
+    if (!isValidObjectId(reviewId)) {
+        return res.status(400).send({ status: false, msg: "invalid review id" })
+    }
     let checkReview = await reviewModels.findById(reviewId)
     if (!checkReview) {
-        return res.status(400).send({ status: false, msg: "reviewId not exist" })
+        return res.status(404).send({ status: false, msg: "reviewId not exist" })
+    }
+    let isreviewDeleted = checkReview.isDeleted
+    if(isreviewDeleted == true){
+        return res.status(404).send({ status: false, msg: " review already deleted" })
     }
 
     let updateReview = await reviewModels.findOneAndUpdate({ _id: reviewId }, body, { new: true })
 
-    let getReview = await reviewModels.find({ bookId })
-    checkBookId._doc["reviews Data"] = getReview
+    
+    checkBookId._doc["reviews Data"] = updateReview
     return res.status(200).send({ status: true, msg: "update successfully", data: checkBookId })
-
-
-
 
 
 }

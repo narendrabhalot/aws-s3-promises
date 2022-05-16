@@ -10,7 +10,7 @@ const authentication = require("../middleware/authentication");
 
 //User Api
 
-router.post("/register/User", userControllers.registerUser)
+router.post("/register", userControllers.registerUser)
 router.post("/login", userControllers.userLogIn)
 
 
