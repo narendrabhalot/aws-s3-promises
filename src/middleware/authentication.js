@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken');
 
 const authentication = function (req, res, next) {
@@ -8,9 +7,7 @@ const authentication = function (req, res, next) {
             return res.status(400).send({ status: false, msg: "token must be present" });
         }
         let decodedToken = jwt.verify(token, "functionUp")
-         
-
-        req.userId = decodedToken.userId;
+         req.userId = decodedToken.userId;
         next();
     } catch (error) {
         console.log(error)

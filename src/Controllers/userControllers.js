@@ -30,9 +30,13 @@ const registerUser = async function (req, res) {
 
       const { title, name, email, password, address, phone } = data
       const checkTitle = data.title
+
       if (checkTitle) {
         if (checkTitle == "Mr" || checkTitle == "Mrs" || checkTitle == "Miss")
 
+        if (!isValidRequestBody(data)) {
+          return res.send({ status: false, msg: "please provide  details" })
+      }
           if (!isValid(title)) {
             return res.status(400).send({ status: false, msg: "title is required" })
           }
@@ -50,7 +54,7 @@ const registerUser = async function (req, res) {
           return res.status(400).send({ status: false, msg: "please enter a valid email" })
         }
 
-        let isuserpresent = await userModelsqfindOne({ email: email })
+        let isuserpresent = await userModels.findOne({ email: email })
         console.log(isuserpresent)
         if (isuserpresent) {
           return res.status(400).send({ status: false, msg: "email already present" })
@@ -102,9 +106,9 @@ const userLogIn = async function (req, res) {
     const email = req.body.email;
     const password = req.body.password;
 
-    if (!email) {
-      return res.status(400).send({ status: false, msg: "email is required" })
-    }
+    if (!isValid(email)) {
+          return res.status(400).send({ status: false, msg: "email is required" })
+        }
     if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
       return res.status(400).send({ status: false, msg: "please enter a valid email" })
     }
