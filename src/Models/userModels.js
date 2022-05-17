@@ -1,8 +1,4 @@
 const mongoose = require("mongoose")
-const moment = require('moment')
-
- let date = moment().format('DD/MM/YYYY');
- console.log(date)
 
 
 
@@ -38,7 +34,6 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      unique:true,
       trim:true,
      },
 

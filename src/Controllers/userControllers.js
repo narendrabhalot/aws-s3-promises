@@ -12,11 +12,7 @@ const isValid = function (value) {
 const isValidRequestBody = function (requestBody) {
   return Object.keys(requestBody).length > 0
 }
-const isValidObjectId = function (objectId) {
-  return mongoose.Types.ObjectId.isValid(objectId)
-}
-
-////////////////////----CREATING USER-----/////////////////////
+///////////////////----CREATING USER-----/////////////////////
 
 const registerUser = async function (req, res) {
 
@@ -32,7 +28,9 @@ const registerUser = async function (req, res) {
       const checkTitle = data.title
 
       if (checkTitle) {
-        if (checkTitle == "Mr" || checkTitle == "Mrs" || checkTitle == "Miss")
+        if (!(checkTitle == "Mr" || checkTitle == "Mrs" || checkTitle == "Miss")){
+          return res.status(400).send({status:false ,msg : "title should be only Mr,Mrs,Miss"})
+        }
 
         if (!isValidRequestBody(data)) {
           return res.send({ status: false, msg: "please provide  details" })
@@ -44,6 +42,18 @@ const registerUser = async function (req, res) {
 
         if (!isValid(name)) {
           return res.status(400).send({ status: false, msg: "name is required" })
+        }
+        if (!isValid(phone)) {
+          return res.status(400).send({ status: false, msg: "phone number is required" })
+        }
+
+        if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(phone)) {
+          return res.status(400).send({ status: false, msg: "please enter a valid phone number" })
+        }
+        let usedphone = await userModels.findOne({ phone: phone })
+        
+        if (usedphone) {
+          return res.status(400).send({ status: false, msg: "`${phone}`phone no. already present" })
         }
 
         if (!isValid(email)) {
@@ -57,7 +67,7 @@ const registerUser = async function (req, res) {
         let isuserpresent = await userModels.findOne({ email: email })
         console.log(isuserpresent)
         if (isuserpresent) {
-          return res.status(400).send({ status: false, msg: "email already present" })
+          return res.status(400).send({ status: false, msg: `${email} email already present` })
         }
 
         if (!isValid(password)) {
@@ -70,18 +80,8 @@ const registerUser = async function (req, res) {
         if (!isValid(address)) {
           return res.status(400).send({ status: false, msg: "address is required" })
         }
-        if (!isValid(phone)) {
-          return res.status(400).send({ status: false, msg: "phone number is required" })
-        }
-
-        if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(phone)) {
-          return res.status(400).send({ status: false, msg: "please enter a valid phone number" })
-        }
-        let usedphone = await userModels.findOne({ phone: phone })
-        console.log(usedphone)
-        if (usedphone) {
-          return res.status(400).send({ status: false, msg: "phone no. already present" })
-        }
+        
+      
         let saveData = await userModels.create(data)
         return res.status(201).send({ status: true, msg: saveData })
 
@@ -122,7 +122,7 @@ const userLogIn = async function (req, res) {
 
     const checkedUser = await userModels.findOne({ email: email, password: password });
     if (!checkedUser) {
-      return res.status(404).send({ status: false, msg: "email or password is not correct" });
+      return res.status(401).send({ status: false, msg: "email or password is not correct" });
     }
 
     else {

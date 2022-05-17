@@ -12,8 +12,8 @@ const isValid = function (value) {
     return true;
 };
 
-const isValidObjectId = function (ObjectId) {
-    return mongoose.Types.ObjectId.isValid(ObjectId)
+const isValidObjectId = function (objectId) {
+    return mongoose.Types.ObjectId.isValid(objectId)
 }
 
 
@@ -30,7 +30,9 @@ const createBook = async function (req, res) {
 
         let data = req.body;
         let userId = data.userId
-
+        if (!isValidObjectId(userId)) {
+            return res.status(400).send({ status: false, msg: `${userId} invalid userId` })
+        }
         let checkuser = await userModels.findById(userId)
         console.log(checkuser)
 
@@ -39,12 +41,8 @@ const createBook = async function (req, res) {
 
         }
 
-
         if (userId != req.userId) {
             return res.status(401).send({ status: false, msg: "you can't create the book " })
-        }
-        if (!isValidObjectId(userId)) {
-            return res.status(400).send({ status: false, msg: "invalid bookId" })
         }
 
         if (!isValidRequestBody(data)) {
@@ -177,11 +175,9 @@ const getBooksById = async function (req, res) {
             return res.status(400).send({ status: false, message: "book id is not present" })
         }
 
-        if (!mongoose.Types.ObjectId.isValid(bookId)) {
-            return res.status(400).send({ status: false, message: "Invalid book id" })
-        }
+       
 
-        const foundedBook = await bookModels.findOne({ is: true }).select({ __v: 0 })
+        const foundedBook = await bookModels.findOne({_id:bookId}).select({ __v: 0 })
         console.log(foundedBook)
 
         if (!foundedBook) {
@@ -214,7 +210,7 @@ const updateBooks = async function (req, res) {
             return res.status(400).send({ status: false, msg: `${userId} is not a invalid userId` })
         }
 
-        const  book = await bookModels.findOne({_id : bookId,isDeleted:false})
+        const book = await bookModels.findOne({ _id: bookId, isDeleted: false })
         console.log(book)
 
         if (!book) {
@@ -226,7 +222,7 @@ const updateBooks = async function (req, res) {
         if (!bookIds) {
             return res.status(400).send({ status: false, msg: " book is not present" })
         }
-        
+
         if (bookIds != req.userId) {
             return res.status(403).send({ status: false, msg: "you are not change the book " })
         }
@@ -238,43 +234,43 @@ const updateBooks = async function (req, res) {
             return res.status(400).send({ status: false, msg: " Book has deleted " })
         }
         if (!isValidRequestBody(requestBody)) {
-            return res.send({ status: false, msg: "please provide  details" })
+            return res.send({ status: false, msg: "please provide  details in body" })
         }
-     const {title ,excerpt , releasedAt , ISBN} = requestBody
-       const updateBookData = {}
+        const { title, excerpt, releasedAt, ISBN } = requestBody
+        const updateBookData = {}
 
-       if (isValid(title)) {
-           const isTitleAlreadyUsed = await bookModels.findOne({title,_id:{$ne:bookId}})
-          if(isTitleAlreadyUsed)
-              return res.status(400).send({status:false , msg :`${title} title is already used`})
-          
-          if(!Object.prototype.hasOwnProperty.call(updateBookData,`$set`))
-          updateBookData[ '$set' ] = {}
-          updateBookData[ '$set' ][ 'title' ] = title
+        if (isValid(title)) {
+            const isTitleAlreadyUsed = await bookModels.findOne({ title, _id: { $ne: bookId } })
+            if (isTitleAlreadyUsed)
+                return res.status(400).send({ status: false, msg: `${title} title is already used` })
+
+            if (!Object.prototype.hasOwnProperty.call(updateBookData, `$set`))
+                updateBookData['$set'] = {}
+            updateBookData['$set']['title'] = title
         }
 
-        if(isValid(excerpt)){
-            if(!Object.prototype.hasOwnProperty.call(updateBookData,`$set`))
-            updateBookData[ '$set' ] = {}
-            updateBookData[ '$set' ][ 'excerpt' ] = excerpt
+        if (isValid(excerpt)) {
+            if (!Object.prototype.hasOwnProperty.call(updateBookData, `$set`))
+                updateBookData['$set'] = {}
+            updateBookData['$set']['excerpt'] = excerpt
         }
-        if(isValid(ISBN)){
-            const isISBNAlreadyUsed = await bookModels.findOne({ISBN,_id:{$ne:bookId}})
-            if(isISBNAlreadyUsed)
-                return res.status(400).send({status:false , msg :`${ISBN} ISBN  already exist`})
-        
-        if(!Object.prototype.hasOwnProperty.call(updateBookData,`$set`))
-            updateBookData[ '$set' ] = {}
-            updateBookData[ '$set' ][ 'ISBN' ] = ISBN
-    }
-    if(isValid(releasedAt)){
-        if(!Object.prototype.hasOwnProperty.call(updateBookData,`$set`))
-            updateBookData[ '$set' ] = {}
-            updateBookData[ '$set' ][ 'releasedAt' ] = releasedAt
-    }
-      
-    
-        let updatebook = await bookModels.findOneAndUpdate({ _id: bookId}, updateBookData, { new: true })
+        if (isValid(ISBN)) {
+            const isISBNAlreadyUsed = await bookModels.findOne({ ISBN, _id: { $ne: bookId } })
+            if (isISBNAlreadyUsed)
+                return res.status(400).send({ status: false, msg: `${ISBN} ISBN  already exist` })
+
+            if (!Object.prototype.hasOwnProperty.call(updateBookData, `$set`))
+                updateBookData['$set'] = {}
+            updateBookData['$set']['ISBN'] = ISBN
+        }
+        if (isValid(releasedAt)) {
+            if (!Object.prototype.hasOwnProperty.call(updateBookData, `$set`))
+                updateBookData['$set'] = {}
+            updateBookData['$set']['releasedAt'] = releasedAt
+        }
+
+
+        let updatebook = await bookModels.findOneAndUpdate({ _id: bookId }, updateBookData, { new: true })
 
         return res.status(200).send({ status: true, msg: "book update successfully ", data: updatebook })
 
@@ -305,12 +301,12 @@ const deleteBooksById = async function (req, res) {
             return res.status(404).send({ status: false, msg: "No book found this bookId" })
 
         }
-        
+
         let bookIds = checkBook.userId
         if (!bookIds) {
             return res.status(404).send({ status: false, msg: " book is not present" })
         }
-        // Authorisation
+
         if (bookIds != req.userId) {
             return res.status(403).send({ status: false, msg: "you are not change the book " })
         }
