@@ -250,13 +250,13 @@ const updateBooks = async function (req, res) {
           
           if(!Object.prototype.hasOwnProperty.call(updateBookData,`$set`))
           updateBookData[ '$set' ] = {}
-          updateBookData[ `$set` ][ `title` ] = title
+          updateBookData[ '$set' ][ 'title' ] = title
         }
 
         if(isValid(excerpt)){
             if(!Object.prototype.hasOwnProperty.call(updateBookData,`$set`))
             updateBookData[ '$set' ] = {}
-            updateBookData[ `$set` ][ `excerpt` ] = excerpt
+            updateBookData[ '$set' ][ 'excerpt' ] = excerpt
         }
         if(isValid(ISBN)){
             const isISBNAlreadyUsed = await bookModels.findOne({ISBN,_id:{$ne:bookId}})
@@ -265,16 +265,16 @@ const updateBooks = async function (req, res) {
         
         if(!Object.prototype.hasOwnProperty.call(updateBookData,`$set`))
             updateBookData[ '$set' ] = {}
-            updateBookData[ `$set` ][ `ISBN` ] = ISBN
+            updateBookData[ '$set' ][ 'ISBN' ] = ISBN
     }
-    if(isValid(ISBN)){
+    if(isValid(releasedAt)){
         if(!Object.prototype.hasOwnProperty.call(updateBookData,`$set`))
             updateBookData[ '$set' ] = {}
-            updateBookData[ `$set` ][ `releasedAt` ] = releasedAt
+            updateBookData[ '$set' ][ 'releasedAt' ] = releasedAt
     }
       
     
-        let updatebook = await bookModels.findOneAndUpdate({ _id: bookId}, updateBooks, { new: true })
+        let updatebook = await bookModels.findOneAndUpdate({ _id: bookId}, updateBookData, { new: true })
 
         return res.status(200).send({ status: true, msg: "book update successfully ", data: updatebook })
 
@@ -305,14 +305,14 @@ const deleteBooksById = async function (req, res) {
             return res.status(404).send({ status: false, msg: "No book found this bookId" })
 
         }
-        //athentication
+        
         let bookIds = checkBook.userId
         if (!bookIds) {
             return res.status(404).send({ status: false, msg: " book is not present" })
         }
         // Authorisation
         if (bookIds != req.userId) {
-            return res.status(401).send({ status: false, msg: "you are not change the book " })
+            return res.status(403).send({ status: false, msg: "you are not change the book " })
         }
 
 
