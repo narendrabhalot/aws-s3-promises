@@ -83,7 +83,7 @@ const registerUser = async function (req, res) {
         
       
         let saveData = await userModels.create(data)
-        return res.status(201).send({ status: true, msg: saveData })
+        return res.status(201).send({ status: true, data: saveData })
 
       }
 

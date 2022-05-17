@@ -49,11 +49,7 @@ const bookSchema = new mongoose.Schema(
          comment: "Holds number of reviews of this book",
      },
 
-    review: {
-      type: Number,
-      default: 0,
-      comment: "Holds number of reviews of this book",
-    },
+ 
 
     deletedAt:Date,
 

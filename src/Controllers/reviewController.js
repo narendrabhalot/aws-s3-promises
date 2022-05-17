@@ -92,7 +92,7 @@ const updateReview = async function (req, res) {
         return res.status(404).send({ status: false, msg: " review already deleted" })
     }
 
-    let updateReview = await reviewModels.findOneAndUpdate({ _id: reviewId }, body, { new: true }).s
+    let updateReview = await reviewModels.findOneAndUpdate({ _id: reviewId }, body, { new: true })
 
     
     checkBookId._doc["reviews Data"] = updateReview
@@ -139,7 +139,7 @@ const deletedReviews = async function (req, res) {
         }
 
         if (findReview.isDeleted == true) {
-            return res.status(400).send({ status: false, msg: "Review is already deleted" });
+            return res.status(404).send({ status: false, msg: "Review is already deleted" });
         }
 
         

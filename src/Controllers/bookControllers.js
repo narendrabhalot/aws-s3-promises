@@ -42,7 +42,7 @@ const createBook = async function (req, res) {
         }
 
         if (userId != req.userId) {
-            return res.status(401).send({ status: false, msg: "you can't create the book " })
+            return res.status(403).send({ status: false, msg: "you can't create the book " })
         }
 
         if (!isValidRequestBody(data)) {

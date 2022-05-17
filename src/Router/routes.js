@@ -17,7 +17,7 @@ router.post("/login", userControllers.userLogIn)
 //Book Api
 
 router.post("/books",authentication, bookControllers.createBook)
-router.get("/books", bookControllers.getBooks)
+router.get("/books",authentication, bookControllers.getBooks)
 router.get("/books/:bookId",authentication, bookControllers.getBooksById)
 router.put("/books/:bookId", authentication, bookControllers.updateBooks)
 router.delete("/books/:bookId", authentication, bookControllers.deleteBooksById)
