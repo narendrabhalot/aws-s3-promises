@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const userModels = require("../models/userModels.js");
 const bookModels = require("../Models/bookModels.js");
 const reviewModels = require("../Models/reviewModels.js");
-
+const aws= require("aws-sdk")
 
 
 
@@ -22,18 +22,48 @@ const isValidRequestBody = function (requestbody) {
 }
 
 
-
+let uploadFile= async ( file) =>{
+    return new Promise( function(resolve, reject) {
+     // this function will upload file to aws and return the link
+     let s3= new aws.S3({apiVersion: '2006-03-01'}); // we will be using the s3 service of aws
+ 
+     var uploadParams= {
+         ACL: "public-read",
+         Bucket: "classroom-training-bucket",  //HERE
+         Key: "abc/" + file.originalname, //HERE 
+         Body: file.buffer
+     }
+ 
+ 
+     s3.upload( uploadParams, function (err, data ){
+         if(err) {
+             return reject({"error": err})
+         }
+         console.log(data)
+         console.log("file uploaded succesfully")
+         return resolve(data.Location)
+     })
+ 
+     // let data= await s3.upload( uploadParams)
+     // if( data) return data.Location
+     // else return "there is an error"
+ 
+    })
+ }
 
 
 const createBook = async function (req, res) {
     try {
 
-        let data = req.body;
-        let userId = data.userId
-        if (!isValidObjectId(userId)) {
-            return res.status(400).send({ status: false, msg: `${userId} invalid userId` })
-        }
-        let checkuser = await userModels.findById(userId)
+        let data = req.body
+    let userId = data.userId
+        console.log(data)
+        
+        // let userId = data.userId
+        // if (!isValidObjectId(userId)) {
+        //     return res.status(400).send({ status: false, msg: `${userId} invalid userId` })
+        // }
+        let checkuser = await userModels.findOne({_id:data.userId})
         console.log(checkuser)
 
         if (!checkuser) {
@@ -41,9 +71,9 @@ const createBook = async function (req, res) {
 
         }
 
-        if (userId != req.userId) {
-            return res.status(403).send({ status: false, msg: "you can't create the book " })
-        }
+        // if (userId != req.userId) {
+        //     return res.status(403).send({ status: false, msg: "you can't create the book " })
+        // }
 
         if (!isValidRequestBody(data)) {
             return res.send({ status: false, msg: "please provide  details" })
@@ -78,7 +108,64 @@ const createBook = async function (req, res) {
             if (!isValidObjectId(userId)) {
                 return res.status(400).send({ status: false, msg: "invalid userId" })
             }
-
+            aws.config.update({
+                accessKeyId: "AKIAY3L35MCRUJ6WPO6J",
+                secretAccessKey: "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",
+                region: "ap-south-1"
+            })
+            
+            // let uploadFile= async ( file) =>{
+            //    return new Promise( function(resolve, reject) {
+            //     // this function will upload file to aws and return the link
+            //     let s3= new aws.S3({apiVersion: '2006-03-01'}); // we will be using the s3 service of aws
+            
+            //     var uploadParams= {
+            //         ACL: "public-read",
+            //         Bucket: "classroom-training-bucket",  //HERE
+            //         Key: "abc/" + file.originalname, //HERE 
+            //         Body: file.buffer
+            //     }
+            
+            
+            //     s3.upload( uploadParams, function (err, data ){
+            //         if(err) {
+            //             return reject({"error": err})
+            //         }
+            //         console.log(data)
+            //         console.log("file uploaded succesfully")
+            //         return resolve(data.Location)
+            //     })
+            
+            //     // let data= await s3.upload( uploadParams)
+            //     // if( data) return data.Location
+            //     // else return "there is an error"
+            
+            //    })
+            // }
+            
+            // router.post("/write-file-aws", async function(req, res){
+            
+            //     try{
+            //         let files= req.files
+            //         if(files && files.length>0){
+            //             //upload to s3 and get the uploaded link
+            //             // res.send the link back to frontend/postman
+            //             let uploadedFileURL= await uploadFile( files[0] )
+            //             res.status(201).send({msg: "file uploaded succesfully", data: uploadedFileURL})
+            //         }
+            //         else{
+            //             res.status(400).send({ msg: "No file found" })
+            //         }
+                    
+            //     }
+            //     catch(err){
+            //         res.status(500).send({msg: err})
+            //     }
+                
+            // })
+            
+          
+            
 
 
             let isUser = await userModels.findById(userId)
@@ -110,7 +197,14 @@ const createBook = async function (req, res) {
 
 
         }
+        let files= req.files
+        if(!(files && files.length>0)){
 
+        }
+            //upload to s3 and get the uploaded link
+            // res.send the link back to frontend/postman
+            let uploadedFileURL= await uploadFile( files[0] )
+           data.bookCover=uploadedFileURL
 
         let saveData = await bookModels.create(data)
         return res.status(201).send({ status: true, msg: "book create successfuly", data: saveData })

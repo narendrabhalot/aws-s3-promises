@@ -49,7 +49,10 @@ const bookSchema = new mongoose.Schema(
          comment: "Holds number of reviews of this book",
      },
 
- 
+     bookCover:{
+       type:String,
+       required:true
+     },
 
     deletedAt:Date,
 
